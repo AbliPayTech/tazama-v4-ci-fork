@@ -63,7 +63,7 @@ kubectl get ns
 
 ---
 
-### 3. Install Helm Dependencies
+## 3. Install Helm Dependencies
 
 Before deploying Tazama apps, install the supporting infrastructure using Helm.
 
@@ -71,52 +71,38 @@ Before deploying Tazama apps, install the supporting infrastructure using Helm.
 |-------------|--------|----------|
 | **NATS** | `nats/nats` | Messaging backbone |
 | **PostgreSQL** | `bitnami/postgresql` | Core transactional database |
-| **Vault** | `hashicorp/vault` | Secrets management |
 | **Keycloak** | `codecentric/keycloakx` | Identity & access management |
 | **NGINX Ingress** | `ingress-nginx/ingress-nginx` | Reverse proxy & routing |
 | **Prometheus & Grafana** | `prometheus-community/kube-prometheus-stack` | Metrics and dashboards |
 | **Elastic Stack (ELK)** | `elastic/helm-charts` | Centralized logging and observability |
 
 
-Add Helm Repositories
+### Add Helm Repositories
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
-
 helm repo add nats https://nats-io.github.io/k8s/helm/charts/
-
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-
 helm repo add elastic https://helm.elastic.co
-
 helm repo update
 ```
 
-Install the added Helm Repositories
+### Install the added Helm Repositories
 ```bash
 # NATS - messaging backbone
 helm install nats nats/nats -n nats --create-namespace
-
 # PostgreSQL - main database
 helm install postgres bitnami/postgresql -n db --create-namespace
-
-# Vault - secrets management
-helm install vault hashicorp/vault -n vault --create-namespace
-
 # NGINX Ingress - reverse proxy
 helm install ingress ingress-nginx/ingress-nginx -n ingress --create-namespace
-
 # Prometheus & Grafana - monitoring stack
 helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
-
 # Elastic Stack (ELK) - logging and observability
 helm install elasticsearch elastic/elasticsearch -n logging --create-namespace
 ```
 
-> Note: These default installations are suitable for development and testing environments. For production deployments, review and customize each chart’s values.yaml file
-> (enable persistence, authentication, and proper resource limits).
+> Note: These default installations are suitable for development and testing environments. For production deployments, review and customize each chart’s values.yaml file and enable persistence, authentication, and proper resource limits.
 
 ---
 
@@ -124,11 +110,10 @@ helm install elasticsearch elastic/elasticsearch -n logging --create-namespace
 
 Argo CD is a declarative, GitOps-based continuous delivery tool for Kubernetes. It continuously monitors your Git repository and automatically syncs your manifests to your cluster.
 
-Install Argo CD in the argocd namespace:
+### Install Argo CD in the argocd namespace:
 
 ```bash
 kubectl create namespace argocd
-
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 ```
 
@@ -147,13 +132,12 @@ argocd-application-controller
 argocd-dex-server
 ```
 
-Access the UI
+### Access the UI
 
 To access the UI locally, port-forward the service:
 
 ```bash
 kubectl -n argocd port-forward svc/argocd-server 8080:443
-
 # Retrieve the initial admin password:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
@@ -171,4 +155,50 @@ Password: (admin password value retrieved)
 
 - **Tip**: Change the default password after first login: `Settings → Accounts → admin → Update Password`
 
+### Optional: Install Argo CD CLI
+
+If you prefer managing Argo CD from the command line, install the CLI tool:
+
+```bash
+# macOS (Homebrew)
+brew install argocd
+# Linux
+sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo chmod +x /usr/local/bin/argocd
+```
+
+Verify installation:
+
+```bash
+argocd version
+```
+
+Then log in using the same credentials:
+
+```bash
+argocd login localhost:8080
+```
+
 ---
+
+## 5. Deploy Tazama Services via Argo CD
+
+Now that Argo CD is installed and running, you can deploy the entire **Tazama Platform** using the **App-of-Apps** pattern — a GitOps best practice for managing multiple Kubernetes applications from a single source of truth.
+
+
+### Overview: App-of-Apps Pattern
+
+The **App-of-Apps** pattern allows you to define one “root” Argo CD Application that automatically creates and manages all other microservice apps (rule-001, rule-002, event-flow, etc.).
+
+This setup ensures:
+- Consistent configuration across environments (staging, production).
+- Centralized version control for all manifests.
+- Automated, self-healing synchronization from Git.
+
+
+### Apply the Root Application
+
+To bootstrap your cluster with all Tazama services:
+
+```bash
+kubectl apply -n argocd -f https://raw.githubusercontent.com/tazama-lf/cluster-config/main/apps/app-of-apps.yaml
