@@ -8,7 +8,31 @@ This is an end to end cloud setup guide for installing Tazama software ((Real-ti
 
 It covers setup, dependency installation (via Helm), application management, and environment customization through Kustomize overlays.
 
-## **Intended Users:** 
+---
+
+- [Intended Users](#intended-users)
+- [Step 1 - Overview](#step-1---overview)
+- [Step 2 - Prerequisites](#step-2---prerequisites)
+- [Step 3 - Cluster Setup](#step-3---cluster-setup)
+- [Step 4 - Install Helm Dependencies](#step-4---install-helm-dependencies)
+  - [Add Helm Repositories](#add-helm-repositories)
+  - [Install the Added Helm Charts](#install-the-added-helm-charts)
+- [Step 5 - Install Argo CD](#step-5---install-argo-cd)
+  - [Install Argo CD in the argocd Namespace](#install-argo-cd-in-the-argocd-namespace)
+  - [Access the UI](#access-the-ui)
+  - [Optional: Install Argo CD CLI](#optional-install-argo-cd-cli)
+- [Step 6 - Deploy Tazama Services via Argo CD](#step-6---deploy-tazama-services-via-argo-cd)
+  - [Overview: App-of-Apps Pattern](#overview-app-of-apps-pattern)
+  - [Apply the Root Application](#apply-the-root-application)
+  - [Verify Deployment](#verify-deployment)
+- [Step 7 - Updating & Syncing Services after New Releases](#step-7---updating--syncing-services-after-new-releases)
+- [Step 8 - Setting Up Ingress](#step-8---setting-up-ingress)
+- [Step 9 - FAQ](#step-9---faq)
+
+---
+
+## Intended Users
+
 - DevOps engineers
 - Developers / Engineers 
 - Open-source contributors deploying or extending the Tazama microservices.
@@ -17,7 +41,7 @@ It covers setup, dependency installation (via Helm), application management, and
 
 ---
 
-## Overview
+### Step 1 - Overview
 
 **Tazama** is an open-source platform for **real-time fraud detection and transaction monitoring**. This repository and guide provide a fully automated GitOps workflow:
 
@@ -29,7 +53,7 @@ It covers setup, dependency installation (via Helm), application management, and
 
 ---
 
-## 1. Prerequisites
+### Step 2 - Prerequisites
 
 | Tool | Description | Installation |
 |------|--------------|----------|
@@ -48,7 +72,7 @@ kubectl get nodes
 
 ---
 
-## 2. Cluster Setup
+### Step 3 - Cluster Setup
 
 If you don’t yet have a running kubernetes cluster but have a cloud account on AWS, we have provided terraform scripts for now in this repository to help you set up an EKS cluster. Navigate to the `terraform scripts` -> `eks-terraform` folder and follow steps in the README.md to setup a cluster with the necessary specs that Tazama requires.
 
@@ -63,7 +87,7 @@ kubectl get ns
 
 ---
 
-## 3. Install Helm Dependencies
+### Step 4 - Install Helm Dependencies
 
 Before deploying Tazama apps, install the supporting infrastructure using Helm.
 
@@ -77,7 +101,7 @@ Before deploying Tazama apps, install the supporting infrastructure using Helm.
 | **Elastic Stack (ELK)** | `elastic/helm-charts` | Centralized logging and observability |
 
 
-### Add Helm Repositories
+#### Add Helm Repositories
 
 ```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -88,29 +112,35 @@ helm repo add elastic https://helm.elastic.co
 helm repo update
 ```
 
-### Install the added Helm Repositories
+#### Install the Added Helm Charts
+
 ```bash
+# Create a namespace for shared infrastructure
+kubectl create namespace infrastructure
+
 # NATS - messaging backbone
-helm install nats nats/nats -n nats --create-namespace
+helm install nats nats/nats -n infrastructure
 # PostgreSQL - main database
-helm install postgres bitnami/postgresql -n db --create-namespace
+helm install postgres bitnami/postgresql -n infrastructure --set global.postgresql.auth.postgresPassword=admin123
 # NGINX Ingress - reverse proxy
-helm install ingress ingress-nginx/ingress-nginx -n ingress --create-namespace
+helm install ingress-nginx ingress-nginx/ingress-nginx -n infrastructure
 # Prometheus & Grafana - monitoring stack
-helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+helm install monitoring prometheus-community/kube-prometheus-stack -n infrastructure
 # Elastic Stack (ELK) - logging and observability
-helm install elasticsearch elastic/elasticsearch -n logging --create-namespace
+helm install elastic elastic/elastic-stack -n infrastructure
+# Keycloak
+helm install keycloak codecentric/keycloakx -n infrastructure --set replicas=1
 ```
 
 > Note: These default installations are suitable for development and testing environments. For production deployments, review and customize each chart’s values.yaml file and enable persistence, authentication, and proper resource limits.
 
 ---
 
-## 4. Install Argo CD
+### Step 5 - Install Argo CD
 
 Argo CD is a declarative, GitOps-based continuous delivery tool for Kubernetes. It continuously monitors your Git repository and automatically syncs your manifests to your cluster.
 
-### Install Argo CD in the argocd namespace:
+#### Install Argo CD in the argocd Namespace
 
 ```bash
 kubectl create namespace argocd
@@ -132,7 +162,7 @@ argocd-application-controller
 argocd-dex-server
 ```
 
-### Access the UI
+#### Access the UI
 
 To access the UI locally, port-forward the service:
 
@@ -155,7 +185,7 @@ Password: (admin password value retrieved)
 
 - **Tip**: Change the default password after first login: `Settings → Accounts → admin → Update Password`
 
-### Optional: Install Argo CD CLI
+#### Optional: Install Argo CD CLI
 
 If you prefer managing Argo CD from the command line, install the CLI tool:
 
@@ -181,12 +211,12 @@ argocd login localhost:8080
 
 ---
 
-## 5. Deploy Tazama Services via Argo CD
+### Step 6 - Deploy Tazama Services via Argo CD
 
 Now that Argo CD is installed and running, you can deploy the entire **Tazama Platform** using the **App-of-Apps** pattern — a GitOps best practice for managing multiple Kubernetes applications from a single source of truth.
 
 
-### Overview: App-of-Apps Pattern
+#### Overview: App-of-Apps Pattern
 
 The **App-of-Apps** pattern allows you to define one “root” Argo CD Application that automatically creates and manages all other microservice apps (rule-001, rule-002, event-flow, etc.). This will sync the services into the staging namespace and deploys images from `tazamaorg/*:2.2.0`
 
@@ -196,7 +226,7 @@ This setup ensures:
 - Automated, self-healing synchronization from Git.
 
 
-### Apply the Root Application
+#### Apply the Root Application
 
 To bootstrap your cluster with all Tazama services:
 
@@ -227,7 +257,7 @@ etc.
 Open https://localhost:8080
  → Log in → Applications Dashboard.
 
-### Verify Deployment 
+#### Verify Deployment
 
 Check workloads running in the Cluster by running;
 
@@ -235,3 +265,35 @@ Check workloads running in the Cluster by running;
 kubectl get pods -n staging
 kubectl get svc -n staging
 ```
+
+### Step 7 - Updating & Syncing Services after New Releases
+
+When a new image is published (e.g. `tazamaorg/rule-001:3.0.0`);
+
+```bash
+# Update the image reference
+image: tazamaorg/rule-001:3.0.0
+
+# Commit & push
+git commit -S -m "bump rule-001 to new release"
+git push
+
+```
+> Argo CD detects the change and redeploys automatically.
+
+### Step 8 - Setting Up Ingress
+
+
+### Step 9 - FAQ
+
+Q1. Can I deploy only one service?
+Yes. Sync the individual app in Argo CD or apply its manifest directly.
+
+Q2. What if I don’t use Docker Hub?
+Update image: fields to your preferred registry (e.g. GHCR, ECR, GCR).
+
+Q3. Can Helm replace Kustomize?
+Yes. You can template services with Helm and let Argo CD manage releases.
+
+Q4. How do I change environment variables?
+Edit container env: in each service’s deployment under the appropriate overlay.
