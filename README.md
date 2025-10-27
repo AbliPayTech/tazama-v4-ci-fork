@@ -38,7 +38,7 @@ It covers setup, dependency installation (via Helm), application management, and
 | **kustomize** | Native k8s configuration management | Included in kubectl ≥ v1.14 |
 | **Argo CD CLI** (optional) | Manage apps from terminal | [Install Argo CD CLI](https://argo-cd.readthedocs.io/en/stable/cli_installation/) |
 | **docker** | Verify images locally | [Install Docker](https://docs.docker.com/get-docker/) |
-| **Kubernetes cluster** | Cloud (EKS/GKE/AKS) | — |
+| **Kubernetes cluster** | Cloud (EKS/GKE/AKS) | Check next section `Cluster Setup` |
 
 
 > Verify your cluster is ready:
@@ -50,7 +50,7 @@ kubectl get nodes
 
 ## 2. Cluster Setup
 
-If you don’t yet have a running kubernetes cluster but have a cloud account on AWS, we have provided terraform scripts in this repository to help you set up an EKS cluster. Navigate to the `terraform scripts` folder -> `eks-terraform` folder and follow steps in the README.md to setup a cluster with the necessary specs that Tazama requires.
+If you don’t yet have a running kubernetes cluster but have a cloud account on AWS, we have provided terraform scripts for now in this repository to help you set up an EKS cluster. Navigate to the `terraform scripts` -> `eks-terraform` folder and follow steps in the README.md to setup a cluster with the necessary specs that Tazama requires.
 
 - [Link](https://github.com/tazama-lf/cloud-infrastructure-deploy/tree/dev/terraform%20scripts) to the terraform scripts. Currently, only EKS scripts exist. AKS and GKE will be added soon.
 
@@ -63,4 +63,112 @@ kubectl get ns
 
 ---
 
+### 3. Install Helm Dependencies
 
+Before deploying Tazama apps, install the supporting infrastructure using Helm.
+
+| Dependency | Chart | Purpose |
+|-------------|--------|----------|
+| **NATS** | `nats/nats` | Messaging backbone |
+| **PostgreSQL** | `bitnami/postgresql` | Core transactional database |
+| **Vault** | `hashicorp/vault` | Secrets management |
+| **Keycloak** | `codecentric/keycloakx` | Identity & access management |
+| **NGINX Ingress** | `ingress-nginx/ingress-nginx` | Reverse proxy & routing |
+| **Prometheus & Grafana** | `prometheus-community/kube-prometheus-stack` | Metrics and dashboards |
+| **Elastic Stack (ELK)** | `elastic/helm-charts` | Centralized logging and observability |
+
+
+Add Helm Repositories
+
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm repo add nats https://nats-io.github.io/k8s/helm/charts/
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+helm repo add elastic https://helm.elastic.co
+
+helm repo update
+```
+
+Install the added Helm Repositories
+```bash
+# NATS - messaging backbone
+helm install nats nats/nats -n nats --create-namespace
+
+# PostgreSQL - main database
+helm install postgres bitnami/postgresql -n db --create-namespace
+
+# Vault - secrets management
+helm install vault hashicorp/vault -n vault --create-namespace
+
+# NGINX Ingress - reverse proxy
+helm install ingress ingress-nginx/ingress-nginx -n ingress --create-namespace
+
+# Prometheus & Grafana - monitoring stack
+helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+
+# Elastic Stack (ELK) - logging and observability
+helm install elasticsearch elastic/elasticsearch -n logging --create-namespace
+```
+
+> Note: These default installations are suitable for development and testing environments. For production deployments, review and customize each chart’s values.yaml file
+> (enable persistence, authentication, and proper resource limits).
+
+---
+
+## 4. Install Argo CD
+
+Argo CD is a declarative, GitOps-based continuous delivery tool for Kubernetes. It continuously monitors your Git repository and automatically syncs your manifests to your cluster.
+
+Install Argo CD in the argocd namespace:
+
+```bash
+kubectl create namespace argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+Once installed, verify the pods:
+
+```bash
+kubectl get pods -n argocd
+```
+
+Expected output should include components like:
+
+```bash
+argocd-server
+argocd-repo-server
+argocd-application-controller
+argocd-dex-server
+```
+
+Access the UI
+
+To access the UI locally, port-forward the service:
+
+```bash
+kubectl -n argocd port-forward svc/argocd-server 8080:443
+
+# Retrieve the initial admin password:
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+
+```
+
+Open your browser at:
+https://localhost:8080
+
+
+```bash
+Credentials:
+Username: admin
+Password: (admin password value retrieved)
+```
+
+- **Tip**: Change the default password after first login: `Settings → Accounts → admin → Update Password`
+
+---
