@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: event-director-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/cloud-infrastructure-deploy'
+    targetRevision: main
+    path: k8s/overlays/staging/event-director
+    # Since kustomize is inferred by path ending in kustomization, no explicit kustomize block needed
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
