@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: Apache-2.0
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rule-045
+  namespace: processor
+  labels:
+    app: rule-045
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rule-045
+  template:
+    metadata:
+      name: rule-045
+      labels:
+        app: rule-045
+    spec:
+      containers:
+        - name: rule-045
+          image: tazamaorg/rule-045:2.2.0
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources: {}
+          env:
+            - name: ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          imagePullPolicy: IfNotPresent
+        # - name: rule-000-sidecar-rel-1-0-0
+        #   image: example.io/sidecar-rel-1-0-0:1.0.0
+        #   ports:
+        #     - name: http
+        #       protocol: TCP
+        #       containerPort: 5000
+        #   resources: {}
+        #   imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      imagePullSecrets:
+        - name: frmpullsecret
+      schedulerName: default-scheduler
+      enableServiceLinks: false
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
