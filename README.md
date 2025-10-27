@@ -52,7 +52,7 @@ kubectl get nodes
 
 If you don’t yet have a running kubernetes cluster but have a cloud account on AWS, we have provided terraform scripts for now in this repository to help you set up an EKS cluster. Navigate to the `terraform scripts` -> `eks-terraform` folder and follow steps in the README.md to setup a cluster with the necessary specs that Tazama requires.
 
-- [Link](https://github.com/tazama-lf/cloud-infrastructure-deploy/tree/dev/terraform%20scripts) to the terraform scripts. Currently, only EKS scripts exist. AKS and GKE will be added soon.
+- [Link](https://github.com/tazama-lf/cloud-infrastructure-deploy/tree/dev/terraform-scripts) to the terraform scripts. Currently, only EKS scripts exist. AKS and GKE will be added soon.
 
 Once ready, confirm connectivity:
 
@@ -188,7 +188,7 @@ Now that Argo CD is installed and running, you can deploy the entire **Tazama Pl
 
 ### Overview: App-of-Apps Pattern
 
-The **App-of-Apps** pattern allows you to define one “root” Argo CD Application that automatically creates and manages all other microservice apps (rule-001, rule-002, event-flow, etc.).
+The **App-of-Apps** pattern allows you to define one “root” Argo CD Application that automatically creates and manages all other microservice apps (rule-001, rule-002, event-flow, etc.). This will sync the services into the staging namespace and deploys images from `tazamaorg/*:2.2.0`
 
 This setup ensures:
 - Consistent configuration across environments (staging, production).
@@ -201,4 +201,37 @@ This setup ensures:
 To bootstrap your cluster with all Tazama services:
 
 ```bash
-kubectl apply -n argocd -f https://raw.githubusercontent.com/tazama-lf/cluster-config/main/apps/app-of-apps.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/tazama-lf/cloud-infrastructure-deploy/main/apps/app-of-apps.yaml
+```
+
+- Monitor progress by running `kubectl -n argocd get applications` Or open the Argo CD UI → view synced apps.
+
+> The manifest above defines a root Argo CD Application pointing to the [cloud-infrastructure-deploy](https://github.com/tazama-lf/cloud-infrastructure-deploy) repo, which in turn manages all the defined Tazama components. Once the manifest is applied, Argo CD detects the new “App-of-Apps” definition, It clones the repository, creates child applications for each service defined under `apps/` and each child app deploys its manifests from `k8s/base` and environment overlays (`k8s/overlays/staging or prod`)
+
+
+Verify Applications in Argo CD by checking that your apps have been created and synced
+```bash
+kubectl get applications -n argocd
+```
+
+Expected output:
+```bash
+NAME             SYNC STATUS   HEALTH STATUS
+rule-001         Synced        Healthy
+rule-002         Synced        Healthy
+etc.
+```
+
+> You can also view them in the Argo CD UI:
+
+Open https://localhost:8080
+ → Log in → Applications Dashboard.
+
+### Verify Deployment 
+
+Check workloads running in the Cluster by running;
+
+```bash
+kubectl get pods -n staging
+kubectl get svc -n staging
+```
