@@ -155,14 +155,20 @@ helm install keycloak codecentric/keycloakx -n infrastructure --set replicas=1
 ### Setting up Sealed-secrets [WIP]
 
 #### Install controller (once)
+
+```bash
 helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
 helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system
+```
 
 #### Seal a secret
+
+```bash
 kubectl create secret generic db-creds \
   --from-literal=password=$POSTGRES_PASSWORD \
   -n staging --dry-run=client -o yaml \
   | kubeseal --format=yaml > k8s/overlays/staging/sealed-db.yaml
+```
 
 ---
 
