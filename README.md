@@ -341,7 +341,7 @@ git push
 
 - Qn, Can Helm replace Kustomize?
 
-    `Yes. You can template services with Helm and let Argo CD manage releases.`
+    `Yes. You can template services with Helm and let Argo CD manage releases. This is the next milestone after a successful E2E testing with Kustomize.`
 
 - Qn, How do I change environment variables?
 
