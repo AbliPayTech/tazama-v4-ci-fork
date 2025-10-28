@@ -1,0 +1,14 @@
+# .github/workflows/destroy.yml
+name: Destroy Tazama
+on: workflow_dispatch
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Uninstall Helm releases
+        run: helm ls -A -q | xargs -I {} helm uninstall {} -n {}
+      - name: Delete namespaces
+        run: kubectl delete ns staging infrastructure argocd --ignore-not-found
+      - name: Destroy EKS
+        run: cd terraform-scripts/eks-terraform && terraform destroy -auto-approve
