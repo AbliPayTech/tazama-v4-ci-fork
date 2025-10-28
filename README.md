@@ -4,12 +4,13 @@
 
 # Tazama Cloud Installation and Deployment Guide
 
-This is an end to end cloud setup guide for installing Tazama software ((Real-time Antifraud and Money Laundering Monitoring System)) in a production environment using Kubernetes, Terraform, Helm, ArgoCD, Kustomize, gitops principles and officially published dockerhub images for the different Tazama compinents.
+This is an end to end cloud setup guide for installing Tazama software (Real-time Antifraud and Money Laundering Monitoring System) in a production like environment using Kubernetes, Terraform, Helm, ArgoCD, Kustomize, gitops principles and officially published dockerhub images for the different Tazama compinents.
 
 It covers setup, dependency installation (via Helm), application management, and environment customization through Kustomize overlays.
 
 ---
 
+- [Compatibility Matrix](#compatibility-matrix)
 - [Intended Users](#intended-users)
 - [Step 1 - Overview](#step-1---overview)
 - [Step 2 - Prerequisites](#step-2---prerequisites)
@@ -28,8 +29,23 @@ It covers setup, dependency installation (via Helm), application management, and
 - [Step 7 - Updating & Syncing Services after New Releases](#step-7---updating--syncing-services-after-new-releases)
 - [Step 8 - Setting Up Ingress](#step-8---setting-up-ingress)
 - [Step 9 - FAQ](#step-9---faq)
+- [License](#license)
 
 ---
+
+## Compatibility Matrix
+
+| Component          | Minimum Version | Recommended Version | Notes |
+|--------------------|-----------------|---------------------|-------|
+| **Kubernetes**     | `1.29`          | `1.30+`             | Tested on EKS, GKE, AKS |
+| **Terraform**      | `1.9.0`         | `1.9.7`             | Pin in workflows with `hashicorp/setup-terraform@v3` |
+| **Helm**           | `3.14.0`        | `3.15+`             | Required for `bitnami`, `nats`, `prometheus-community` charts |
+| **Argo CD**        | `2.11.0`        | `2.12+`             | App-of-Apps pattern requires `ApplicationSet` support |
+| **Kustomize**      | `5.0+` (built-in)| `5.4+`              | Use `kubectl apply -k` or `kustomize build` |
+| **kubectl**        | `1.29+`         | Latest stable       | Must match cluster version (±1 minor) |
+| **Docker**         | `24.0+`         | `27.0+`             | For local image testing |
+| **Argo CD CLI**    | `2.11+`         | Latest              | `brew install argocd` or binary download |
+| **Sealed Secrets** | `0.24+`         | `0.25+`             | Optional: for encrypted secrets in Git |
 
 ## Intended Users
 
@@ -136,6 +152,20 @@ helm install keycloak codecentric/keycloakx -n infrastructure --set replicas=1
 
 ---
 
+### Setting up Sealed-secrets [WIP]
+
+# Install controller (once)
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system
+
+# Seal a secret
+kubectl create secret generic db-creds \
+  --from-literal=password=$POSTGRES_PASSWORD \
+  -n staging --dry-run=client -o yaml \
+  | kubeseal --format=yaml > k8s/overlays/staging/sealed-db.yaml
+
+---
+
 ### Step 5 - Install Argo CD
 
 Argo CD is a declarative, GitOps-based continuous delivery tool for Kubernetes. It continuously monitors your Git repository and automatically syncs your manifests to your cluster.
@@ -167,13 +197,13 @@ argocd-dex-server
 To access the UI locally, port-forward the service:
 
 ```bash
-kubectl -n argocd port-forward svc/argocd-server 8080:443
+kubectl -n argocd port-forward svc/argocd-server 8080:443 & open https://localhost:8080
 # Retrieve the initial admin password:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
 ```
 
-Open your browser at:
+If not already opened, point your browser to:
 https://localhost:8080
 
 
@@ -218,12 +248,16 @@ Now that Argo CD is installed and running, you can deploy the entire **Tazama Pl
 
 #### Overview: App-of-Apps Pattern
 
-The **App-of-Apps** pattern allows you to define one “root” Argo CD Application that automatically creates and manages all other microservice apps (rule-001, rule-002, event-flow, etc.). This will sync the services into the staging namespace and deploys images from `tazamaorg/*:2.2.0`
+The **App-of-Apps** pattern allows you to define one `root` Argo CD Application that automatically creates and manages all other microservice apps (`rule-001, rule-002, event-flow, etc.`). This will sync the services into the staging namespace and deploys images from `tazamaorg/*:2.2.0`
 
 This setup ensures:
 - Consistent configuration across environments (staging, production).
 - Centralized version control for all manifests.
 - Automated, self-healing synchronization from Git.
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1940e772-0ae9-45eb-9b28-cee1e8133059" alt="Architecture Diagram" width="600">
+</p>
 
 
 #### Apply the Root Application
@@ -254,8 +288,7 @@ etc.
 
 > You can also view them in the Argo CD UI:
 
-Open https://localhost:8080
- → Log in → Applications Dashboard.
+Open https://localhost:8080 → `Log in` → `Applications Dashboard`
 
 #### Verify Deployment
 
@@ -265,6 +298,8 @@ Check workloads running in the Cluster by running;
 kubectl get pods -n staging
 kubectl get svc -n staging
 ```
+
+---
 
 ### Step 7 - Updating & Syncing Services after New Releases
 
@@ -281,19 +316,39 @@ git push
 ```
 > Argo CD detects the change and redeploys automatically.
 
+---
+
 ### Step 8 - Setting Up Ingress
 
 
+---
+
 ### Step 9 - FAQ
 
-Q1. Can I deploy only one service?
-Yes. Sync the individual app in Argo CD or apply its manifest directly.
+- Qn, Can I deploy only one service?
 
-Q2. What if I don’t use Docker Hub?
-Update image: fields to your preferred registry (e.g. GHCR, ECR, GCR).
+    `Yes. Sync the individual app in Argo CD or apply its manifest directly.`
 
-Q3. Can Helm replace Kustomize?
-Yes. You can template services with Helm and let Argo CD manage releases.
+- Qn, What if I don’t use Docker Hub?
 
-Q4. How do I change environment variables?
-Edit container env: in each service’s deployment under the appropriate overlay.
+    `Update image: fields to your preferred registry (e.g. GHCR, ECR, GCR).`
+
+- Qn, Can Helm replace Kustomize?
+
+    `Yes. You can template services with Helm and let Argo CD manage releases.`
+
+- Qn, How do I change environment variables?
+
+    `Edit container env: in each service’s deployment under the appropriate overlay.`
+
+---
+
+## License
+
+```bash
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+```
+
+Tazama is licensed under the Apache 2.0 License.
+
+---
