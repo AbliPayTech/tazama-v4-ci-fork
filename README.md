@@ -49,7 +49,7 @@ It covers setup, dependency installation (via Helm), application management, and
 
 ## Intended Users
 
-- DevOps engineers
+- DevOps engineers.
 - Developers / Engineers 
 - Open-source contributors deploying or extending the Tazama microservices.
 
