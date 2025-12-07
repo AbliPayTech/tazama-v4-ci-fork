@@ -50,7 +50,7 @@ It covers setup, dependency installation (via Helm), application management, and
 ## Intended Users
 
 - DevOps engineers.
-- Developers / Engineers 
+- Developers / Engineers.
 - Open-source contributors deploying or extending the Tazama microservices.
 
 `This guide also assumes the above users have foundational understanding of Kubernetes concepts e.g pods, namespaces, ingress and other general DevOps tools e.g Docker, Helm and ArgoCD.`
