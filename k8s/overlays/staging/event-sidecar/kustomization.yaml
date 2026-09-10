@@ -7,7 +7,6 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
-        value: {name: APM_SERVICE_NAME, value: event-sidecar}
 patches:
   - target:
       kind: Deployment
