@@ -41,16 +41,6 @@ spec:
               value: "info"
             - name: NODE_EXTRA_CA_CERTS
               value: /usr/share/lumberjack/config/certs/ca.crt
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 20
           imagePullPolicy: IfNotPresent
         # - name: rule-000-sidecar-rel-1-0-0
         #   image: example.io/sidecar-rel-1-0-0:1.0.0
