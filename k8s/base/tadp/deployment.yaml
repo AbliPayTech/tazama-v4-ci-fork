@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: transaction-aggregation-decisioning-processor
-  namespace: processor
   labels:
     app: transaction-aggregation-decisioning-processor
 spec:

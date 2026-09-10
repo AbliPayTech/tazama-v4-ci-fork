@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rule-024
-  namespace: processor
   labels:
     app: rule-024
 spec:
