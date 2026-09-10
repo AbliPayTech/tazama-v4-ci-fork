@@ -30,6 +30,6 @@ spec:
             - name: LOCAL_CACHE_ENABLED
               value: "true"
             - name: CONSUMER_STREAM
-              value: "sub-rule-002-4.0.0"
+              value: "sub-rule-002-4-0-0"
             - name: PRODUCER_STREAM
-              value: "pub-rule-002-4.0.0"
+              value: "pub-rule-002-4-0-0"
