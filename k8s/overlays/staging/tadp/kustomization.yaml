@@ -7,6 +7,8 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
+        value: {name: APM_SERVICE_NAME, value: tadp}
+        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
 patches:
   - target:
       kind: Deployment
@@ -19,3 +21,16 @@ patches:
               name: tazama-app-config
           - secretRef:
               name: tazama-app-secrets
+  - target:
+      kind: Deployment
+      name: tadp
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: FUNCTION_NAME, value: tadp}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: APM_SERVICE_NAME, value: tadp}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}

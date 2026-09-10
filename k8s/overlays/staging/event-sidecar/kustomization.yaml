@@ -7,6 +7,7 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
+        value: {name: APM_SERVICE_NAME, value: event-sidecar}
 patches:
   - target:
       kind: Deployment
@@ -19,3 +20,13 @@ patches:
               name: tazama-app-config
           - secretRef:
               name: tazama-app-secrets
+  - target:
+      kind: Deployment
+      name: event-sidecar
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: FUNCTION_NAME, value: event-sidecar}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: APM_SERVICE_NAME, value: event-sidecar}
