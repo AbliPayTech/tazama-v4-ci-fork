@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: event-flow
-  namespace: processor
   labels:
     app: event-flow
 spec:

@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: relay-service-integration-nats
-  namespace: processor
   labels:
     app: relay-service-integration-nats
 spec:

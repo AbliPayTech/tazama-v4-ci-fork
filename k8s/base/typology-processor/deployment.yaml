@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: typology-processor
-  namespace: processor
   labels:
     app: typology-processor
 spec:

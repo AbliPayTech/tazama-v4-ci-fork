@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rule-007
-  namespace: processor
   labels:
     app: rule-007
 spec:
