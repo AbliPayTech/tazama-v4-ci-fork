@@ -29,16 +29,6 @@ spec:
               value: "production"
             - name: LOG_LEVEL
               value: "info"
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            httpGet:
-              path: /health
-              port: 8080
-            initialDelaySeconds: 10
-            periodSeconds: 20
           imagePullPolicy: IfNotPresent
         # - name: rule-000-sidecar-rel-1-0-0
         #   image: example.io/sidecar-rel-1-0-0:1.0.0
