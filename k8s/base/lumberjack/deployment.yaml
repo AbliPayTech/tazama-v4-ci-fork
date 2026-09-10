@@ -41,13 +41,11 @@ spec:
               value: "info"
             - name: NODE_EXTRA_CA_CERTS
               value: /usr/share/lumberjack/config/certs/ca.crt
-          readinessProbe:
             httpGet:
               path: /health
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
             httpGet:
               path: /health
               port: 8080

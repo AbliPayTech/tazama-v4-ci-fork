@@ -29,13 +29,11 @@ spec:
               value: "production"
             - name: LOG_LEVEL
               value: "info"
-          readinessProbe:
             httpGet:
               path: /health
               port: 3001
             initialDelaySeconds: 5
             periodSeconds: 10
-          livenessProbe:
             httpGet:
               path: /health
               port: 3001
