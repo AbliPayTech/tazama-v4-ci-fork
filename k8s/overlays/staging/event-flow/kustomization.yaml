@@ -7,8 +7,6 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
-        value: {name: APM_SERVICE_NAME, value: event-flow}
-        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
 patches:
   - target:
       kind: Deployment

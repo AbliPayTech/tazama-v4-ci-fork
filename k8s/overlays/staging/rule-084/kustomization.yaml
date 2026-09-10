@@ -7,13 +7,6 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
-        value: {name: RULE_VERSION, value: 4.0.0}
-        value: {name: RULE_NAME, value: 084}
-        value: {name: SUPPRESS_ALERTS, value: true}
-        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
-        value: {name: APM_SERVICE_NAME, value: rule-084}
-        value: {name: LOCAL_CACHETTL, value: 300}
-        value: {name: LOCAL_CACHE_ENABLED, value: true}
 patches:
   - target:
       kind: Deployment
