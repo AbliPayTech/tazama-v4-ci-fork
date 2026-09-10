@@ -16,11 +16,6 @@ spec:
       labels:
         app: lumberjack
     spec:
-      volumes:
-        - name: elasticsearch-master-certs
-          secret:
-            secretName: elasticsearch-master-certs
-            defaultMode: 420
       containers:
         - name: lumberjack
           image: tazamaorg/lumberjack:4.0.0
@@ -30,8 +25,6 @@ spec:
               protocol: TCP
           resources: {}
           volumeMounts:
-            - name: elasticsearch-master-certs
-              mountPath: /usr/share/lumberjack/config/certs
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           env:
