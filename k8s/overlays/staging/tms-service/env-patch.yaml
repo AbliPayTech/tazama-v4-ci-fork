@@ -14,10 +14,10 @@ spec:
                 name: tazama-app-secrets
           env:
             - name: FUNCTION_NAME
-              value: tms-service
+              value: "tms-service"
             - name: APM_SERVICE_NAME
-              value: tms-service
+              value: "tms-service"
             - name: SIDECAR_HOST
-              value: event-sidecar.tazama.svc.cluster.local:5000
+              value: "event-sidecar.tazama.svc.cluster.local:5000"
             - name: PORT
-              value: 3000
+              value: "3000"
