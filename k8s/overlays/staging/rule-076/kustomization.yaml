@@ -7,6 +7,13 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
+        value: {name: RULE_VERSION, value: 4.0.0}
+        value: {name: RULE_NAME, value: 076}
+        value: {name: SUPPRESS_ALERTS, value: true}
+        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
+        value: {name: APM_SERVICE_NAME, value: rule-076}
+        value: {name: LOCAL_CACHETTL, value: 300}
+        value: {name: LOCAL_CACHE_ENABLED, value: true}
 patches:
   - target:
       kind: Deployment
@@ -19,3 +26,31 @@ patches:
               name: tazama-app-config
           - secretRef:
               name: tazama-app-secrets
+  - target:
+      kind: Deployment
+      name: rule-076
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: FUNCTION_NAME, value: rule-076-rel-4-0-0}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: RULE_VERSION, value: 4.0.0}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: RULE_NAME, value: 076}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: SUPPRESS_ALERTS, value: true}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: APM_SERVICE_NAME, value: rule-076}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: LOCAL_CACHETTL, value: 300}
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value: {name: LOCAL_CACHE_ENABLED, value: true}
