@@ -14,18 +14,18 @@ spec:
                 name: tazama-app-secrets
           env:
             - name: FUNCTION_NAME
-              value: rule-044-rel-4-0-0
+              value: "rule-044-rel-4-0-0"
             - name: RULE_VERSION
-              value: 4.0.0
+              value: "4.0.0"
             - name: RULE_NAME
-              value: 044
+              value: "044"
             - name: SUPPRESS_ALERTS
-              value: true
+              value: "true"
             - name: SIDECAR_HOST
-              value: event-sidecar.tazama.svc.cluster.local:5000
+              value: "event-sidecar.tazama.svc.cluster.local:5000"
             - name: APM_SERVICE_NAME
-              value: rule-044
+              value: "rule-044"
             - name: LOCAL_CACHETTL
-              value: 300
+              value: "300"
             - name: LOCAL_CACHE_ENABLED
-              value: true
+              value: "true"

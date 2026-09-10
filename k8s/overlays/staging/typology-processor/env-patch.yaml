@@ -14,8 +14,8 @@ spec:
                 name: tazama-app-secrets
           env:
             - name: FUNCTION_NAME
-              value: typology-processor
+              value: "typology-processor"
             - name: APM_SERVICE_NAME
-              value: typology-processor
+              value: "typology-processor"
             - name: SIDECAR_HOST
-              value: event-sidecar.tazama.svc.cluster.local:5000
+              value: "event-sidecar.tazama.svc.cluster.local:5000"

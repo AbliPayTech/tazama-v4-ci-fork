@@ -14,6 +14,6 @@ spec:
                 name: tazama-app-secrets
           env:
             - name: FUNCTION_NAME
-              value: event-sidecar
+              value: "event-sidecar"
             - name: APM_SERVICE_NAME
-              value: event-sidecar
+              value: "event-sidecar"
