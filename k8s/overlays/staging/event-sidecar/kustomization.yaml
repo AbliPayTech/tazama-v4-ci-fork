@@ -25,7 +25,11 @@ patches:
     patch: |-
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: FUNCTION_NAME, value: event-sidecar}
+        value:
+          name: FUNCTION_NAME
+          value: event-sidecar
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: APM_SERVICE_NAME, value: event-sidecar}
+        value:
+          name: APM_SERVICE_NAME
+          value: event-sidecar
