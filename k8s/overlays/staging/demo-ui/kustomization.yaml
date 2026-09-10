@@ -7,34 +7,4 @@ commonLabels:
   env: tazama
 patchesStrategicMerge:
   - replica-patch.yaml
-patches:
-  - target:
-      kind: Deployment
-      name: demo-ui
-    patch: |-
-      - op: add
-        path: /spec/template/spec/containers/0/envFrom
-        value:
-          - configMapRef:
-              name: tazama-app-config
-          - secretRef:
-              name: tazama-app-secrets
-  - target:
-      kind: Deployment
-      name: demo-ui
-    patch: |-
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: FUNCTION_NAME
-          value: demo-ui
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: APM_SERVICE_NAME
-          value: demo-ui
-      - op: add
-        path: /spec/template/spec/containers/0/env/-
-        value:
-          name: SIDECAR_HOST
-          value: event-sidecar.tazama.svc.cluster.local:5000
+  - env-patch.yaml

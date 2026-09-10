@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-sidecar
+spec:
+  template:
+    spec:
+      containers:
+        - name: event-sidecar
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: event-sidecar
+            - name: APM_SERVICE_NAME
+              value: event-sidecar

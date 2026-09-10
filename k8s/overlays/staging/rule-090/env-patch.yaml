@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rule-090
+spec:
+  template:
+    spec:
+      containers:
+        - name: rule-090
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: rule-090-rel-4-0-0
+            - name: RULE_VERSION
+              value: 4.0.0
+            - name: RULE_NAME
+              value: 090
+            - name: SUPPRESS_ALERTS
+              value: true
+            - name: SIDECAR_HOST
+              value: event-sidecar.tazama.svc.cluster.local:5000
+            - name: APM_SERVICE_NAME
+              value: rule-090
+            - name: LOCAL_CACHETTL
+              value: 300
+            - name: LOCAL_CACHE_ENABLED
+              value: true

@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lumberjack
+spec:
+  template:
+    spec:
+      containers:
+        - name: lumberjack
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: lumberjack
+            - name: APM_SERVICE_NAME
+              value: lumberjack
+            - name: SIDECAR_HOST
+              value: event-sidecar.tazama.svc.cluster.local:5000
