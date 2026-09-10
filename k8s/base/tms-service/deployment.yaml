@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: tms-service
-          image: tazamaorg/tms-service:2.2.0
+          image: tazamaorg/tms-service:4.0.0
           ports:
             - name: http
               containerPort: 3000

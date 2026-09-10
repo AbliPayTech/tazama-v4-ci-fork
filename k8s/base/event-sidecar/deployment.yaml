@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: event-sidecar
-          image: tazamaorg/event-sidecar:2.2.0
+          image: tazamaorg/event-sidecar:4.0.0
           ports:
             - name: http
               containerPort: 5000

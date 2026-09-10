@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: rule-016
-          image: tazamaorg/rule-016:2.2.0
+          image: tazamaorg/rule-016:4.0.0
           ports:
             - name: http
               containerPort: 8080
