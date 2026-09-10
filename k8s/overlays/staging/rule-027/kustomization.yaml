@@ -8,7 +8,14 @@ commonLabels:
 patchesStrategicMerge:
   - replica-patch.yaml
 patches:
-  - path: ../config/env-patch.yaml
-    target:
+  - target:
       kind: Deployment
       name: rule-027
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/envFrom
+        value:
+          - configMapRef:
+              name: tazama-app-config
+          - secretRef:
+              name: tazama-app-secrets
