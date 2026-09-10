@@ -4,10 +4,10 @@ metadata:
   name: app-of-apps-staging
   namespace: argocd
 spec:
-  project: default
+  project: tazama
   source:
     repoURL: 'https://github.com/tazama-lf/cloud-infrastructure-deploy'
-    targetRevision: main
+    targetRevision: dev
     path: apps/staging
   destination:
     server: 'https://kubernetes.default.svc'

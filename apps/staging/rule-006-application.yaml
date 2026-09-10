@@ -4,15 +4,15 @@ metadata:
   name: rule-006-staging
   namespace: argocd
 spec:
-  project: default
+  project: tazama
   source:
-    repoURL: 'https://github.com/cloud-infrastructure-deploy'
-    targetRevision: main
+    repoURL: 'https://github.com/tazama-lf/cloud-infrastructure-deploy'
+    targetRevision: dev
     path: k8s/overlays/staging/rule-006
     # Since kustomize is inferred by path ending in kustomization, no explicit kustomize block needed
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: staging
+    namespace: tazama
   syncPolicy:
     automated:
       prune: true
