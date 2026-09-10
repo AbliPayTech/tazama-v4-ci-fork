@@ -23,7 +23,7 @@ spec:
             defaultMode: 420
       containers:
         - name: lumberjack
-          image: tazamaorg/lumberjack:2.2.0
+          image: tazamaorg/lumberjack:4.0.0
           ports:
             - name: http
               containerPort: 8080
