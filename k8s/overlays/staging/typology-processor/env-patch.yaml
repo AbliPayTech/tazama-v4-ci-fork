@@ -19,3 +19,9 @@ spec:
               value: "typology-processor"
             - name: SIDECAR_HOST
               value: "event-sidecar.tazama.svc.cluster.local:5000"
+            - name: CONSUMER_STREAM
+              value: "typology-processor"
+            - name: PRODUCER_STREAM
+              value: "sub-rule-001-4.0.0"
+            - name: INTERDICTION_PRODUCER
+              value: "interdiction-service"
