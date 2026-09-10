@@ -25,25 +25,41 @@ patches:
     patch: |-
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: FUNCTION_NAME, value: rule-044-rel-4-0-0}
+        value:
+          name: FUNCTION_NAME
+          value: rule-044-rel-4-0-0
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: RULE_VERSION, value: 4.0.0}
+        value:
+          name: RULE_VERSION
+          value: 4.0.0
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: RULE_NAME, value: 044}
+        value:
+          name: RULE_NAME
+          value: 044
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: SUPPRESS_ALERTS, value: true}
+        value:
+          name: SUPPRESS_ALERTS
+          value: true
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
+        value:
+          name: SIDECAR_HOST
+          value: event-sidecar.tazama.svc.cluster.local:5000
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: APM_SERVICE_NAME, value: rule-044}
+        value:
+          name: APM_SERVICE_NAME
+          value: rule-044
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: LOCAL_CACHETTL, value: 300}
+        value:
+          name: LOCAL_CACHETTL
+          value: 300
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: LOCAL_CACHE_ENABLED, value: true}
+        value:
+          name: LOCAL_CACHE_ENABLED
+          value: true

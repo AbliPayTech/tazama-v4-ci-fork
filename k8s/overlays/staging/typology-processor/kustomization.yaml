@@ -25,10 +25,16 @@ patches:
     patch: |-
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: FUNCTION_NAME, value: typology-processor}
+        value:
+          name: FUNCTION_NAME
+          value: typology-processor
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: APM_SERVICE_NAME, value: typology-processor}
+        value:
+          name: APM_SERVICE_NAME
+          value: typology-processor
       - op: add
         path: /spec/template/spec/containers/0/env/-
-        value: {name: SIDECAR_HOST, value: event-sidecar.tazama.svc.cluster.local:5000}
+        value:
+          name: SIDECAR_HOST
+          value: event-sidecar.tazama.svc.cluster.local:5000
