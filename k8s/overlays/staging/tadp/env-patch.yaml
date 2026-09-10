@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tadp
+spec:
+  template:
+    spec:
+      containers:
+        - name: tadp
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: tadp
+            - name: APM_SERVICE_NAME
+              value: tadp
+            - name: SIDECAR_HOST
+              value: event-sidecar.tazama.svc.cluster.local:5000

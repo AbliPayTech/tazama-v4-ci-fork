@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-service
+spec:
+  template:
+    spec:
+      containers:
+        - name: admin-service
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: admin-service
+            - name: APM_SERVICE_NAME
+              value: admin-service
+            - name: SIDECAR_HOST
+              value: event-sidecar.tazama.svc.cluster.local:5000

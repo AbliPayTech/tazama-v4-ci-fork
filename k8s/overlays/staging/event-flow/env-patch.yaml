@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-flow
+spec:
+  template:
+    spec:
+      containers:
+        - name: event-flow
+          envFrom:
+            - configMapRef:
+                name: tazama-app-config
+            - secretRef:
+                name: tazama-app-secrets
+          env:
+            - name: FUNCTION_NAME
+              value: event-flow
+            - name: APM_SERVICE_NAME
+              value: event-flow
+            - name: SIDECAR_HOST
+              value: event-sidecar.tazama.svc.cluster.local:5000
