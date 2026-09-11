@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tadp
+  name: transaction-aggregation-decisioning-processor
 spec:
   replicas: 1
