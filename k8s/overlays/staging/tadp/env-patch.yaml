@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tadp
+  name: transaction-aggregation-decisioning-processor
 spec:
   template:
     spec:
       containers:
-        - name: tadp
+        - name: transaction-aggregation-decisioning-processor
           envFrom:
             - configMapRef:
                 name: tazama-app-config

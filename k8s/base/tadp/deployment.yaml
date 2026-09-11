@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: transaction-aggregation-decisioning-processor
-          image: tazamaorg/transaction-aggregation-decisioning-processor:4.0.0
+          image: tazamaorg/transaction-aggregation-decisioning-processor:3.0.0
           ports:
             - name: http
               containerPort: 8080
