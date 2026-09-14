@@ -19,3 +19,33 @@ spec:
               value: "auth-service"
             - name: SIDECAR_HOST
               value: "event-sidecar.tazama.svc.cluster.local:5000"
+            # Tazama auth-service configuration (was missing entirely).
+            - name: AUTH_PROVIDER
+              value: "@tazama-lf/auth-lib-provider-keycloak"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8080"
+            - name: AUTH_URL
+              value: "http://keycloak-keycloakx-http.keycloak.svc.cluster.local:8080/auth"
+            - name: KEYCLOAK_REALM
+              value: "tazama-global"
+            - name: CLIENT_ID
+              value: "cms-backend"
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tazama-auth-keys
+                  key: CLIENT_SECRET
+            - name: CERT_PATH_PRIVATE
+              value: "/etc/tazama-auth/private.pem"
+            - name: CERT_PATH_PUBLIC
+              value: "/etc/tazama-auth/public.pem"
+          volumeMounts:
+            - name: tazama-auth-keys
+              mountPath: /etc/tazama-auth
+              readOnly: true
+      volumes:
+        - name: tazama-auth-keys
+          secret:
+            secretName: tazama-auth-keys
