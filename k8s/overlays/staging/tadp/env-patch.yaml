@@ -20,7 +20,7 @@ spec:
             - name: SIDECAR_HOST
               value: "event-sidecar.tazama.svc.cluster.local:5000"
             - name: SUPPRESS_ALERTS
-              value: "true"
+              value: "false"
             - name: ALERT_PRODUCER
               value: "investigation-service"
             - name: ALERT_DESTINATION
