@@ -20,11 +20,11 @@ spec:
             - name: SIDECAR_HOST
               value: "event-sidecar.tazama.svc.cluster.local:5000"
             - name: RULE_NAME
-              value: "event-flow"
+              value: "EFRuP"
             - name: RULE_VERSION
               value: "4.0.0"
             - name: SUPPRESS_ALERTS
-              value: "true"
+              value: "false"
             - name: INTERDICTION_PRODUCER
               value: "interdiction-service"
             - name: INTERDICTION_DESTINATION
